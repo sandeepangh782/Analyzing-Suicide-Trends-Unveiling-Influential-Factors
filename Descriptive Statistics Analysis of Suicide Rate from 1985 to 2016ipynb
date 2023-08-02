@@ -1,0 +1,1209 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNopA31UZmpBYAxanLeL+O6",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/sandeepangh782/Analysis-of-Spotify-Dataset/blob/main/Descriptive%20Statistics%20Analysis%20of%20Suicide%20Rate%20from%201985%20to%202016ipynb\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**About the dataset:**This compiled dataset pulled from four other datasets linked by time and place, and was built to find signals correlated to increased suicide rates among different cohorts globally, across the socio-economic spectrum.\n",
+        "\n",
+        "**Problem Statement:** The suicide rate in lots of countries have been quite high for many years, including the developing and developed countries. At the begining, we'll find out the key factors of high suicide rate."
+      ],
+      "metadata": {
+        "id": "l15rkdYewta4"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "igjVdSaGSKcn",
+        "outputId": "61efa2cf-bbb7-4dac-f8c9-69987371d0a9"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Mounted at /content/gdrive\n"
+          ]
+        }
+      ],
+      "source": [
+        "from google.colab import drive\n",
+        "drive.mount('/content/gdrive')"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import numpy as np\n",
+        "import pandas as pd"
+      ],
+      "metadata": {
+        "id": "7V3AdnXxSgCI"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df = pd.read_csv(r'/content/gdrive/MyDrive/Multivariate/master.csv')"
+      ],
+      "metadata": {
+        "id": "gPHomDIRSNH0"
+      },
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "displays the first 10 rows of the DataFrame"
+      ],
+      "metadata": {
+        "id": "4X5KHWm0vc09"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df.head()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 206
+        },
+        "id": "5a4GYRtCSeAx",
+        "outputId": "00576baa-e984-45c2-f569-cc9febd12d44"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "   country  year     sex          age  suicides_no  population  \\\n",
+              "0  Albania  1987    male  15-24 years           21      312900   \n",
+              "1  Albania  1987    male  35-54 years           16      308000   \n",
+              "2  Albania  1987  female  15-24 years           14      289700   \n",
+              "3  Albania  1987    male    75+ years            1       21800   \n",
+              "4  Albania  1987    male  25-34 years            9      274300   \n",
+              "\n",
+              "   suicides/100k pop country-year  HDI for year  gdp_for_year ($)   \\\n",
+              "0               6.71  Albania1987           NaN      2,156,624,900   \n",
+              "1               5.19  Albania1987           NaN      2,156,624,900   \n",
+              "2               4.83  Albania1987           NaN      2,156,624,900   \n",
+              "3               4.59  Albania1987           NaN      2,156,624,900   \n",
+              "4               3.28  Albania1987           NaN      2,156,624,900   \n",
+              "\n",
+              "   gdp_per_capita ($)       generation  \n",
+              "0                 796     Generation X  \n",
+              "1                 796           Silent  \n",
+              "2                 796     Generation X  \n",
+              "3                 796  G.I. Generation  \n",
+              "4                 796          Boomers  "
+            ],
+            "text/html": [
+              "\n",
+              "\n",
+              "  <div id=\"df-2c50ceb4-c573-4caa-8c8c-e65519cb29b8\">\n",
+              "    <div class=\"colab-df-container\">\n",
+              "      <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>country</th>\n",
+              "      <th>year</th>\n",
+              "      <th>sex</th>\n",
+              "      <th>age</th>\n",
+              "      <th>suicides_no</th>\n",
+              "      <th>population</th>\n",
+              "      <th>suicides/100k pop</th>\n",
+              "      <th>country-year</th>\n",
+              "      <th>HDI for year</th>\n",
+              "      <th>gdp_for_year ($)</th>\n",
+              "      <th>gdp_per_capita ($)</th>\n",
+              "      <th>generation</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>Albania</td>\n",
+              "      <td>1987</td>\n",
+              "      <td>male</td>\n",
+              "      <td>15-24 years</td>\n",
+              "      <td>21</td>\n",
+              "      <td>312900</td>\n",
+              "      <td>6.71</td>\n",
+              "      <td>Albania1987</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>2,156,624,900</td>\n",
+              "      <td>796</td>\n",
+              "      <td>Generation X</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>Albania</td>\n",
+              "      <td>1987</td>\n",
+              "      <td>male</td>\n",
+              "      <td>35-54 years</td>\n",
+              "      <td>16</td>\n",
+              "      <td>308000</td>\n",
+              "      <td>5.19</td>\n",
+              "      <td>Albania1987</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>2,156,624,900</td>\n",
+              "      <td>796</td>\n",
+              "      <td>Silent</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>Albania</td>\n",
+              "      <td>1987</td>\n",
+              "      <td>female</td>\n",
+              "      <td>15-24 years</td>\n",
+              "      <td>14</td>\n",
+              "      <td>289700</td>\n",
+              "      <td>4.83</td>\n",
+              "      <td>Albania1987</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>2,156,624,900</td>\n",
+              "      <td>796</td>\n",
+              "      <td>Generation X</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>Albania</td>\n",
+              "      <td>1987</td>\n",
+              "      <td>male</td>\n",
+              "      <td>75+ years</td>\n",
+              "      <td>1</td>\n",
+              "      <td>21800</td>\n",
+              "      <td>4.59</td>\n",
+              "      <td>Albania1987</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>2,156,624,900</td>\n",
+              "      <td>796</td>\n",
+              "      <td>G.I. Generation</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>Albania</td>\n",
+              "      <td>1987</td>\n",
+              "      <td>male</td>\n",
+              "      <td>25-34 years</td>\n",
+              "      <td>9</td>\n",
+              "      <td>274300</td>\n",
+              "      <td>3.28</td>\n",
+              "      <td>Albania1987</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>2,156,624,900</td>\n",
+              "      <td>796</td>\n",
+              "      <td>Boomers</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "      <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-2c50ceb4-c573-4caa-8c8c-e65519cb29b8')\"\n",
+              "              title=\"Convert this dataframe to an interactive table.\"\n",
+              "              style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M0 0h24v24H0V0z\" fill=\"none\"/>\n",
+              "    <path d=\"M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z\"/><path d=\"M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z\"/>\n",
+              "  </svg>\n",
+              "      </button>\n",
+              "\n",
+              "\n",
+              "\n",
+              "    <div id=\"df-4e022980-a7b0-47d3-b319-bb930c9364dc\">\n",
+              "      <button class=\"colab-df-quickchart\" onclick=\"quickchart('df-4e022980-a7b0-47d3-b319-bb930c9364dc')\"\n",
+              "              title=\"Suggest charts.\"\n",
+              "              style=\"display:none;\">\n",
+              "\n",
+              "<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "     width=\"24px\">\n",
+              "    <g>\n",
+              "        <path d=\"M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z\"/>\n",
+              "    </g>\n",
+              "</svg>\n",
+              "      </button>\n",
+              "    </div>\n",
+              "\n",
+              "<style>\n",
+              "  .colab-df-quickchart {\n",
+              "    background-color: #E8F0FE;\n",
+              "    border: none;\n",
+              "    border-radius: 50%;\n",
+              "    cursor: pointer;\n",
+              "    display: none;\n",
+              "    fill: #1967D2;\n",
+              "    height: 32px;\n",
+              "    padding: 0 0 0 0;\n",
+              "    width: 32px;\n",
+              "  }\n",
+              "\n",
+              "  .colab-df-quickchart:hover {\n",
+              "    background-color: #E2EBFA;\n",
+              "    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "    fill: #174EA6;\n",
+              "  }\n",
+              "\n",
+              "  [theme=dark] .colab-df-quickchart {\n",
+              "    background-color: #3B4455;\n",
+              "    fill: #D2E3FC;\n",
+              "  }\n",
+              "\n",
+              "  [theme=dark] .colab-df-quickchart:hover {\n",
+              "    background-color: #434B5C;\n",
+              "    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "    fill: #FFFFFF;\n",
+              "  }\n",
+              "</style>\n",
+              "\n",
+              "    <script>\n",
+              "      async function quickchart(key) {\n",
+              "        const containerElement = document.querySelector('#' + key);\n",
+              "        const charts = await google.colab.kernel.invokeFunction(\n",
+              "            'suggestCharts', [key], {});\n",
+              "      }\n",
+              "    </script>\n",
+              "\n",
+              "      <script>\n",
+              "\n",
+              "function displayQuickchartButton(domScope) {\n",
+              "  let quickchartButtonEl =\n",
+              "    domScope.querySelector('#df-4e022980-a7b0-47d3-b319-bb930c9364dc button.colab-df-quickchart');\n",
+              "  quickchartButtonEl.style.display =\n",
+              "    google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "}\n",
+              "\n",
+              "        displayQuickchartButton(document);\n",
+              "      </script>\n",
+              "      <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      flex-wrap:wrap;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "      <script>\n",
+              "        const buttonEl =\n",
+              "          document.querySelector('#df-2c50ceb4-c573-4caa-8c8c-e65519cb29b8 button.colab-df-convert');\n",
+              "        buttonEl.style.display =\n",
+              "          google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "        async function convertToInteractive(key) {\n",
+              "          const element = document.querySelector('#df-2c50ceb4-c573-4caa-8c8c-e65519cb29b8');\n",
+              "          const dataTable =\n",
+              "            await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                     [key], {});\n",
+              "          if (!dataTable) return;\n",
+              "\n",
+              "          const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "            '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "            + ' to learn more about interactive tables.';\n",
+              "          element.innerHTML = '';\n",
+              "          dataTable['output_type'] = 'display_data';\n",
+              "          await google.colab.output.renderOutput(dataTable, element);\n",
+              "          const docLink = document.createElement('div');\n",
+              "          docLink.innerHTML = docLinkHtml;\n",
+              "          element.appendChild(docLink);\n",
+              "        }\n",
+              "      </script>\n",
+              "    </div>\n",
+              "  </div>\n"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 5
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Provides the statistical information of the dataframe.\n",
+        "\n",
+        "count: It indicates the number of data points available for analysis in each column.\n",
+        "\n",
+        "mean: It represents the average value of the data in that column.\n",
+        "\n",
+        "std: It measures the amount of variation or dispersion in the data points around the mean.\n",
+        "\n",
+        "min: It shows the smallest value present in the data.\n",
+        "\n",
+        "25%: It represents the value below which 25% of the data falls.\n",
+        "\n",
+        "50%: It represents the value below which 50% of the data falls.\n",
+        "\n",
+        "75%: It represents the value below which 75% of the data falls.\n",
+        "\n",
+        "max: It shows the largest value present in the data."
+      ],
+      "metadata": {
+        "id": "krnqfi-AvWll"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df.describe()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 300
+        },
+        "id": "uoPxM6sJfPJ5",
+        "outputId": "f3a413f8-3d4f-4eea-fffa-4056e3458c28"
+      },
+      "execution_count": 58,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "               year   suicides_no    population  suicides/100k pop  \\\n",
+              "count  27820.000000  27820.000000  2.782000e+04       27820.000000   \n",
+              "mean    2001.258375    242.574407  1.844794e+06          12.816097   \n",
+              "std        8.469055    902.047917  3.911779e+06          18.961511   \n",
+              "min     1985.000000      0.000000  2.780000e+02           0.000000   \n",
+              "25%     1995.000000      3.000000  9.749850e+04           0.920000   \n",
+              "50%     2002.000000     25.000000  4.301500e+05           5.990000   \n",
+              "75%     2008.000000    131.000000  1.486143e+06          16.620000   \n",
+              "max     2016.000000  22338.000000  4.380521e+07         224.970000   \n",
+              "\n",
+              "       HDI for year  gdp_per_capita ($)  \n",
+              "count   8364.000000        27820.000000  \n",
+              "mean       0.776601        16866.464414  \n",
+              "std        0.093367        18887.576472  \n",
+              "min        0.483000          251.000000  \n",
+              "25%        0.713000         3447.000000  \n",
+              "50%        0.779000         9372.000000  \n",
+              "75%        0.855000        24874.000000  \n",
+              "max        0.944000       126352.000000  "
+            ],
+            "text/html": [
+              "\n",
+              "\n",
+              "  <div id=\"df-3a5b43ea-e1d1-4c5e-bf40-ca8ee1accf7c\">\n",
+              "    <div class=\"colab-df-container\">\n",
+              "      <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>year</th>\n",
+              "      <th>suicides_no</th>\n",
+              "      <th>population</th>\n",
+              "      <th>suicides/100k pop</th>\n",
+              "      <th>HDI for year</th>\n",
+              "      <th>gdp_per_capita ($)</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>count</th>\n",
+              "      <td>27820.000000</td>\n",
+              "      <td>27820.000000</td>\n",
+              "      <td>2.782000e+04</td>\n",
+              "      <td>27820.000000</td>\n",
+              "      <td>8364.000000</td>\n",
+              "      <td>27820.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>mean</th>\n",
+              "      <td>2001.258375</td>\n",
+              "      <td>242.574407</td>\n",
+              "      <td>1.844794e+06</td>\n",
+              "      <td>12.816097</td>\n",
+              "      <td>0.776601</td>\n",
+              "      <td>16866.464414</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>std</th>\n",
+              "      <td>8.469055</td>\n",
+              "      <td>902.047917</td>\n",
+              "      <td>3.911779e+06</td>\n",
+              "      <td>18.961511</td>\n",
+              "      <td>0.093367</td>\n",
+              "      <td>18887.576472</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>min</th>\n",
+              "      <td>1985.000000</td>\n",
+              "      <td>0.000000</td>\n",
+              "      <td>2.780000e+02</td>\n",
+              "      <td>0.000000</td>\n",
+              "      <td>0.483000</td>\n",
+              "      <td>251.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>25%</th>\n",
+              "      <td>1995.000000</td>\n",
+              "      <td>3.000000</td>\n",
+              "      <td>9.749850e+04</td>\n",
+              "      <td>0.920000</td>\n",
+              "      <td>0.713000</td>\n",
+              "      <td>3447.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>50%</th>\n",
+              "      <td>2002.000000</td>\n",
+              "      <td>25.000000</td>\n",
+              "      <td>4.301500e+05</td>\n",
+              "      <td>5.990000</td>\n",
+              "      <td>0.779000</td>\n",
+              "      <td>9372.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>75%</th>\n",
+              "      <td>2008.000000</td>\n",
+              "      <td>131.000000</td>\n",
+              "      <td>1.486143e+06</td>\n",
+              "      <td>16.620000</td>\n",
+              "      <td>0.855000</td>\n",
+              "      <td>24874.000000</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>max</th>\n",
+              "      <td>2016.000000</td>\n",
+              "      <td>22338.000000</td>\n",
+              "      <td>4.380521e+07</td>\n",
+              "      <td>224.970000</td>\n",
+              "      <td>0.944000</td>\n",
+              "      <td>126352.000000</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "      <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-3a5b43ea-e1d1-4c5e-bf40-ca8ee1accf7c')\"\n",
+              "              title=\"Convert this dataframe to an interactive table.\"\n",
+              "              style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M0 0h24v24H0V0z\" fill=\"none\"/>\n",
+              "    <path d=\"M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z\"/><path d=\"M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z\"/>\n",
+              "  </svg>\n",
+              "      </button>\n",
+              "\n",
+              "\n",
+              "\n",
+              "    <div id=\"df-2dab07e3-4ce2-42f3-a2c4-c3757aa980ab\">\n",
+              "      <button class=\"colab-df-quickchart\" onclick=\"quickchart('df-2dab07e3-4ce2-42f3-a2c4-c3757aa980ab')\"\n",
+              "              title=\"Suggest charts.\"\n",
+              "              style=\"display:none;\">\n",
+              "\n",
+              "<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "     width=\"24px\">\n",
+              "    <g>\n",
+              "        <path d=\"M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z\"/>\n",
+              "    </g>\n",
+              "</svg>\n",
+              "      </button>\n",
+              "    </div>\n",
+              "\n",
+              "<style>\n",
+              "  .colab-df-quickchart {\n",
+              "    background-color: #E8F0FE;\n",
+              "    border: none;\n",
+              "    border-radius: 50%;\n",
+              "    cursor: pointer;\n",
+              "    display: none;\n",
+              "    fill: #1967D2;\n",
+              "    height: 32px;\n",
+              "    padding: 0 0 0 0;\n",
+              "    width: 32px;\n",
+              "  }\n",
+              "\n",
+              "  .colab-df-quickchart:hover {\n",
+              "    background-color: #E2EBFA;\n",
+              "    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "    fill: #174EA6;\n",
+              "  }\n",
+              "\n",
+              "  [theme=dark] .colab-df-quickchart {\n",
+              "    background-color: #3B4455;\n",
+              "    fill: #D2E3FC;\n",
+              "  }\n",
+              "\n",
+              "  [theme=dark] .colab-df-quickchart:hover {\n",
+              "    background-color: #434B5C;\n",
+              "    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "    fill: #FFFFFF;\n",
+              "  }\n",
+              "</style>\n",
+              "\n",
+              "    <script>\n",
+              "      async function quickchart(key) {\n",
+              "        const containerElement = document.querySelector('#' + key);\n",
+              "        const charts = await google.colab.kernel.invokeFunction(\n",
+              "            'suggestCharts', [key], {});\n",
+              "      }\n",
+              "    </script>\n",
+              "\n",
+              "      <script>\n",
+              "\n",
+              "function displayQuickchartButton(domScope) {\n",
+              "  let quickchartButtonEl =\n",
+              "    domScope.querySelector('#df-2dab07e3-4ce2-42f3-a2c4-c3757aa980ab button.colab-df-quickchart');\n",
+              "  quickchartButtonEl.style.display =\n",
+              "    google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "}\n",
+              "\n",
+              "        displayQuickchartButton(document);\n",
+              "      </script>\n",
+              "      <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      flex-wrap:wrap;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "      <script>\n",
+              "        const buttonEl =\n",
+              "          document.querySelector('#df-3a5b43ea-e1d1-4c5e-bf40-ca8ee1accf7c button.colab-df-convert');\n",
+              "        buttonEl.style.display =\n",
+              "          google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "        async function convertToInteractive(key) {\n",
+              "          const element = document.querySelector('#df-3a5b43ea-e1d1-4c5e-bf40-ca8ee1accf7c');\n",
+              "          const dataTable =\n",
+              "            await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                     [key], {});\n",
+              "          if (!dataTable) return;\n",
+              "\n",
+              "          const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "            '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "            + ' to learn more about interactive tables.';\n",
+              "          element.innerHTML = '';\n",
+              "          dataTable['output_type'] = 'display_data';\n",
+              "          await google.colab.output.renderOutput(dataTable, element);\n",
+              "          const docLink = document.createElement('div');\n",
+              "          docLink.innerHTML = docLinkHtml;\n",
+              "          element.appendChild(docLink);\n",
+              "        }\n",
+              "      </script>\n",
+              "    </div>\n",
+              "  </div>\n"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 58
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Mean suicide rates from year 1985 t0 2016"
+      ],
+      "metadata": {
+        "id": "G3rHOdRGT1fL"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "mean_suicides = df.groupby(['year'])['suicides_no'].count()\n",
+        "print(mean_suicides)\n",
+        "print(\"Average suicide number\",mean_suicides.mean().round())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "qYx74udYS1T1",
+        "outputId": "7ac1ca5d-c92f-4478-ee3a-bc860534fc85"
+      },
+      "execution_count": 40,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "year\n",
+            "1985     576\n",
+            "1986     576\n",
+            "1987     648\n",
+            "1988     588\n",
+            "1989     624\n",
+            "1990     768\n",
+            "1991     768\n",
+            "1992     780\n",
+            "1993     780\n",
+            "1994     816\n",
+            "1995     936\n",
+            "1996     924\n",
+            "1997     924\n",
+            "1998     948\n",
+            "1999     996\n",
+            "2000    1032\n",
+            "2001    1056\n",
+            "2002    1032\n",
+            "2003    1032\n",
+            "2004    1008\n",
+            "2005    1008\n",
+            "2006    1020\n",
+            "2007    1032\n",
+            "2008    1020\n",
+            "2009    1068\n",
+            "2010    1056\n",
+            "2011    1032\n",
+            "2012     972\n",
+            "2013     960\n",
+            "2014     936\n",
+            "2015     744\n",
+            "2016     160\n",
+            "Name: suicides_no, dtype: int64\n",
+            "Average suicide number 869.0\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "In the given duration the average suicide rate was around 869 people. In the\n",
+        "2009 the suicide rate was the highest"
+      ],
+      "metadata": {
+        "id": "q2URaaPaUCc3"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Median suicide rate from 1985 to 2016"
+      ],
+      "metadata": {
+        "id": "ZiqwLq6iWz0h"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "median_suicides = df.groupby(['year'])['suicides_no'].count()\n",
+        "print(mean_suicides)\n",
+        "print(\"The median of suicide rates:\",mean_suicides.median().round())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "R53KxQ89TciX",
+        "outputId": "ffbd9610-1484-4b0d-fddd-112118cd3ff0"
+      },
+      "execution_count": 41,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "year\n",
+            "1985     576\n",
+            "1986     576\n",
+            "1987     648\n",
+            "1988     588\n",
+            "1989     624\n",
+            "1990     768\n",
+            "1991     768\n",
+            "1992     780\n",
+            "1993     780\n",
+            "1994     816\n",
+            "1995     936\n",
+            "1996     924\n",
+            "1997     924\n",
+            "1998     948\n",
+            "1999     996\n",
+            "2000    1032\n",
+            "2001    1056\n",
+            "2002    1032\n",
+            "2003    1032\n",
+            "2004    1008\n",
+            "2005    1008\n",
+            "2006    1020\n",
+            "2007    1032\n",
+            "2008    1020\n",
+            "2009    1068\n",
+            "2010    1056\n",
+            "2011    1032\n",
+            "2012     972\n",
+            "2013     960\n",
+            "2014     936\n",
+            "2015     744\n",
+            "2016     160\n",
+            "Name: suicides_no, dtype: int64\n",
+            "The median of suicide rates: 942.0\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "The median of the suicide rate is 942"
+      ],
+      "metadata": {
+        "id": "stfmoi53WAVE"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "sex = df.groupby(['year','sex'])['suicides_no'].sum()\n",
+        "print(sex)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "OUkM2slOV5kY",
+        "outputId": "ed79e0ae-57d3-42cc-c8f4-f4b85b46f908"
+      },
+      "execution_count": 50,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "year  sex   \n",
+            "1985  female     32479\n",
+            "      male       83584\n",
+            "1986  female     33852\n",
+            "      male       86818\n",
+            "1987  female     35006\n",
+            "                 ...  \n",
+            "2014  male      171428\n",
+            "2015  female     47248\n",
+            "      male      156392\n",
+            "2016  female      3504\n",
+            "      male       12099\n",
+            "Name: suicides_no, Length: 64, dtype: int64\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Mode of the suicide numbers"
+      ],
+      "metadata": {
+        "id": "lrFtuVFBgfmm"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "col_list = df[\"suicides_no\"].mode()\n",
+        "print(col_list)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "bsMtaC7xXAJN",
+        "outputId": "6942b9b7-7a64-4917-e7b4-f5306f198cfd"
+      },
+      "execution_count": 63,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "0    0\n",
+            "Name: suicides_no, dtype: int64\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Standard deviation in suicide rate per 100k population column."
+      ],
+      "metadata": {
+        "id": "JQUNQTCDgj-w"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "std_dev_suicides_100k = df['suicides/100k pop'].std().round()\n",
+        "print(f\"Standard deviation of suicides/100k pop: {std_dev_suicides_100k}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "d7-EjS2YeAFr",
+        "outputId": "9e36a016-d960-40f9-d50d-6ce6008d3d76"
+      },
+      "execution_count": 65,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Standard deviation of suicides/100k pop: 19.0\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Correaltion between suicide numbers and population"
+      ],
+      "metadata": {
+        "id": "5SrDTr-ghBFi"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "correlation_suicides_population = df['suicides_no'].corr(df['population'])\n",
+        "print(f\"Correlation between suicides_no and population: {correlation_suicides_population}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Yh-kVva8gQru",
+        "outputId": "3113008e-f948-4960-bb1e-1118f2e97ba7"
+      },
+      "execution_count": 66,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Correlation between suicides_no and population: 0.6161622675219285\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "From the correlation the output is 0.6 which is positive correaltion therefore we can say that with increate in population there is increase in suicide rates."
+      ],
+      "metadata": {
+        "id": "Vp2P8Ugpgyl2"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**Skewness**"
+      ],
+      "metadata": {
+        "id": "vywIf5uki5Oe"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "skewness_suicides = df['suicides_no'].skew()\n",
+        "print(f\"Skewness of suicides_no: {skewness_suicides}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "UhycsNOJgwwC",
+        "outputId": "e225534e-facf-4d95-f6b9-b1b6b93fe20f"
+      },
+      "execution_count": 67,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Skewness of suicides_no: 10.352910335856805\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Positively skewed which means most of the suicide rates lie in the right of the mean."
+      ],
+      "metadata": {
+        "id": "srZp0qGVh5vT"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Kurtosis"
+      ],
+      "metadata": {
+        "id": "ayrzClGTk1DK"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "kurtosis_suicides = df['suicides_no'].kurt()\n",
+        "print(f\"Kurtosis of suicides_no: {kurtosis_suicides}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "_xDbThgLhXRG",
+        "outputId": "fb40e7fb-50ea-434e-ec2d-7e26527ed870"
+      },
+      "execution_count": 68,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Kurtosis of suicides_no: 157.1688417742334\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "kurtosis values are typically around 3 for a normal distribution. So, a kurtosis value of 157.1688 is extremely high and indicates an extremely heavy-tailed distribution with a very sharp peak. A high kurtosis value could be an indication of outliers or a non-standard distribution in the dataset"
+      ],
+      "metadata": {
+        "id": "GkAhTnSsjuph"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "covariance_suicides_population = df['suicides_no'].cov(df['population'])\n",
+        "print(f\"Covariance between suicides_no and population: {covariance_suicides_population}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "A7Kgv8-sjF6V",
+        "outputId": "2afecd89-5414-4d4a-a150-741b15f69a63"
+      },
+      "execution_count": 69,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Covariance between suicides_no and population: 2174197877.0798373\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "the covariance value of 2174197877.0798373 suggests that there is some relationship between \"suicides_no\" and \"population\", as the \"suicides_no\" variable increases, the \"population\" variable tends to increase as well. It indicates that in the given dataset, larger populations are associated with higher suicide numbers. The large covariance value may o indicate a strong relationship between the two variables as if the \"suicides_no\" and \"population\" values are large, the covariance will also be large, even if the relationship is not particularly strong."
+      ],
+      "metadata": {
+        "id": "8cz3ltajlRxh"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Correlation matrix"
+      ],
+      "metadata": {
+        "id": "0VVxrBOWvQfu"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "correlation_matrix = df.corr()\n",
+        "print(\"Correlation matrix:\")\n",
+        "print(correlation_matrix)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "mGEPiiuGk0VE",
+        "outputId": "da1d7fdd-c102-4ed1-f2bb-d54b1c1ceb0c"
+      },
+      "execution_count": 70,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Correlation matrix:\n",
+            "                        year  suicides_no  population  suicides/100k pop  \\\n",
+            "year                1.000000    -0.004546    0.008850          -0.039037   \n",
+            "suicides_no        -0.004546     1.000000    0.616162           0.306604   \n",
+            "population          0.008850     0.616162    1.000000           0.008285   \n",
+            "suicides/100k pop  -0.039037     0.306604    0.008285           1.000000   \n",
+            "HDI for year        0.366786     0.151399    0.102943           0.074279   \n",
+            "gdp_per_capita ($)  0.339134     0.061330    0.081510           0.001785   \n",
+            "\n",
+            "                    HDI for year  gdp_per_capita ($)  \n",
+            "year                    0.366786            0.339134  \n",
+            "suicides_no             0.151399            0.061330  \n",
+            "population              0.102943            0.081510  \n",
+            "suicides/100k pop       0.074279            0.001785  \n",
+            "HDI for year            1.000000            0.771228  \n",
+            "gdp_per_capita ($)      0.771228            1.000000  \n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "<ipython-input-70-7a7341cd5616>:1: FutureWarning: The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.\n",
+            "  correlation_matrix = df.corr()\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "The correlation between suicides and the GDP per capita is also positive but weak (0.061). This indicates that there might be a slight positive association between a country's economic prosperity (higher GDP per capita) and the number of suicides, but again, the correlation is not strong, so it may be one of the factors affecting suicide rates\n",
+        "\n",
+        "The correlation between suicides and population is moderate (0.616). This suggests that there is a moderate positive association between a larger population and a higher number of suicides.\n",
+        "\n",
+        "The correlation between the year and suicides per 100k population is negative (-0.039). This indicates that the suicide rate per 100,000 people might have a slight downward trend over the years, we can see that after 2015 there is a downward trend in suicide rates even though there had been rise in the rates before."
+      ],
+      "metadata": {
+        "id": "m_cfnp6Pui9c"
+      }
+    }
+  ]
+}
